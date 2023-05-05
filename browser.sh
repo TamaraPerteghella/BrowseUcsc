@@ -1,37 +1,42 @@
 #!/bin/bash
 index=1
-size=$(wc -l $1)
-
+size=$(wc -l < "$1")
+re=[0-9]+$
 case "$(uname -sr)" in
    # MAC OS
    Darwin*)
      echo 'Detected Mac OS X'
      open -a Safari && echo "Defaul Browser: Safari" || echo "No suitable browser find. Safari expected. Exit"; exit 0
-     while $index < $size
-     do 
-         i=$(sed -n '($index)p' $1)
+     while [ $index -le $size ]
+     do
+         i=$(sed -n $index"p" $1)
          if [[ ${i:0:1} != "#" ]]; then
-             echo $(sed -n '($index-1)p' $1)
-             open $i 2> /dev/null &
+             prev=`expr $index - 1`
+             echo $(sed -n $prev"p" $1)
+             $browser $i 2> /dev/null &
          else
              echo $i
-             open $(sed -n '($index+1)p' $1) 2> /dev/null &
+             next=`expr $index + 1`
+             $browser $(sed -n $next"p" $1) 2> /dev/null &
          fi;
-         echo "Press enter to continue, a number to access the coordinates, or [q] to exit. "
-         read var_name
+         read -p "Press enter to continue, a number to access the coordinates, or [q] to exit: " var_name
          osascript shut_safari.sh
-         while [ ($var_name < 0 || $var_name > $size) || $var_name != "q" || $var_name != "" ]
+         while ! { [ "$var_name" == "q" ] || [ "$var_name" == "" ] || [[ $var_name =~ ${re} ]]; }
          do
-             echo "Input not handled. Check that it respects the following criteria;
-                   \> Insert a suitable position; boundaries [1, $size].\n Check with `grep -n` the index of the coordinates you are interested in.
+             echo -e "Input not handled. Check that it respects the following criteria;
+                   \> Insert a suitable position; boundaries [1, $size]. Check with [grep -n] the index of the coordinates you are interested in.
                    \> Press enter to continue to the next coordinate.
-                   \> Press `q` to exit."
+                   \> Press [q] to exit.\n"
+             read -p "Press enter to continue, a number to access the coordinates, or [q] to exit: " var_name
          done
-         ;;        
-         if [[ $var_name == "q" ]]; then
+
+         if [[ "$var_name" == "q" ]]; then
              exit 0
-         elif [[ $var_name == "" ]]; then
-             index=$index+2
+         elif [[ "$var_name" == "" ]]; then
+             index=`expr $index + 2`
+         elif [[ $var_name -gt $size ]]; then
+             echo -e "Input not handled. Check that it respects the following criteria;
+                   \> Insert a suitable position; boundaries [1, $size]. Check with [grep -n] the index of the coordinates you are interested in."
          else
              index=$var_name
          fi;
@@ -42,44 +47,49 @@ case "$(uname -sr)" in
    Linux*)
      echo 'Detected OS: Linux'
      #Check if at least one suitable program is available
-     if [[ ( ! command -v firefox &> /dev/null ) && ( ! command -v google-chrome &> /dev/null ) ]]; then
+     if ! type firefox &> /dev/null && ! type google-chrome &> /dev/null; then
          echo "No suitable program found; check the installation of Firefox and/or Chrome"
          exit 0
      fi;
+
      
      #Select the tool to open the browser
-     if [[ ! command -v firefox &> /dev/null ]]; then
+     if type firefox &> /dev/null; then
          browser=firefox
      else
          browser=google-chrome
      fi;
-     
-     while $index < $size
-     do 
-         i=$(sed -n $index $1)
+
+     while [ $index -le $size ]
+     do
+         i=$(sed -n $index"p" $1)
          if [[ ${i:0:1} != "#" ]]; then
-             echo $(sed -n $index-1 $1)
+             prev=`expr $index - 1`
+             echo $(sed -n $prev"p" $1)
              $browser $i 2> /dev/null &
          else
              echo $i
-             $browser $(sed -n $index+1 $1) 2> /dev/null &
+             next=`expr $index + 1`
+             $browser $(sed -n $next"p" $1) 2> /dev/null &
          fi;
-             
-         echo "Press enter to continue, a number to access the coordinates, or [q] to exit. "
-         read var_name
+         read -p "Press enter to continue, a number to access the coordinates, or [q] to exit: " var_name
          wmctrl -a firefox; xdotool key Ctrl+w; wmctrl -r firefox -b add,shaded
-         while [ ($var_name < 0 || $var_name > $size) || $var_name != "q" || $var_name != "" ]
+         while ! { [ "$var_name" == "q" ] || [ "$var_name" == "" ] || [[ $var_name =~ ${re} ]]; }
          do
-             echo "Input not handled. Check that it respects the following criteria;
-                   \> Insert a suitable position; boundaries [1, $size].\n Check with `grep -n` the index of the coordinates you are interested in.
+             echo -e "Input not handled. Check that it respects the following criteria;
+                   \> Insert a suitable position; boundaries [1, $size]. Check with [grep -n] the index of the coordinates you are interested in.
                    \> Press enter to continue to the next coordinate.
-                   \> Press `q` to exit."
+                   \> Press [q] to exit.\n"
+             read -p "Press enter to continue, a number to access the coordinates, or [q] to exit: " var_name
          done
-         ;;        
-         if [[ $var_name == "q" ]]; then
+
+         if [[ "$var_name" == "q" ]]; then
              exit 0
-         elif [[ $var_name == "" ]]; then
-             index=$index+2
+         elif [[ "$var_name" == "" ]]; then
+             index=`expr $index + 2`
+         elif [[ $var_name -gt $size ]]; then
+             echo -e "Input not handled. Check that it respects the following criteria;
+                   \> Insert a suitable position; boundaries [1, $size]. Check with [grep -n] the index of the coordinates you are interested in."
          else
              index=$var_name
          fi;
