@@ -6,7 +6,7 @@ coordinates = open(sys.argv[1], "r")
 links = open("display_ucsc.urls.txt", "w")
 db = sys.argv[2]
 
-for line in annotation_set:
+for line in coordinates:
   try:
     chr = line.split("\t")[0]
     start = min(line.split("\t")[1], line.split("\t")[2])
