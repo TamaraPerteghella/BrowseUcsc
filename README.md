@@ -8,7 +8,7 @@ The Safari seach engine is required.
 Firefox or Google chrome search engines are required.
 
 # Usage
-The `process_bed.py` takes in input a bed file to build the urls of interest.
+The `process_bed.py` takes in input a bed file to build the urls of interest. The code of the assembly to use shall be stated as second argument.
 ```
 python3 process_bed.py test.bed hg38
 ```
