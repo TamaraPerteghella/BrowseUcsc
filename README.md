@@ -2,8 +2,10 @@
 
 # Basic requirements:
 ## MacOS
-## Linux
+The Safari seach engine is required.
 
+## Linux
+Firefox or Google chrome search engines are required.
 
 # Usage
 The process_bed.py takes in input a bed file to build the urls of interest.
