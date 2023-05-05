@@ -22,16 +22,30 @@ case "$(uname -sr)" in
 
    Linux*)
      echo 'Detected OS: Linux'
+     if [[ ! command -v firefox &> /dev/null && ! command -v google-chrome &> /dev/null ]]; then
+         echo "No suitable program found; check the installation of Firefox and/or Chrome"
+         exit 0
+     fi;
+     
+     if [[ ! command -v firefox &> /dev/null ]]; then
+         browser=firefox
+     else
+         browser=google-chrome
+     fi;
+     
+     
      for i in `cat $1`
      do 
          if [[ ${i:0:1} != "#" ]]; then      
-             firefox $i 2> /dev/null &
-             echo "Press a key to continue, or [q] to exit. "
-             read var_name
-             if [[ $var_name == "q" ]]; then
-                exit 0
-             fi;
-             wmctrl -a firefox; xdotool key Ctrl+w; wmctrl -r firefox -b add,shaded
+             if [[ ! command -v firefox &> /dev/null 
+                  firefox $i 2> /dev/null &
+                  echo "Press a key to continue, or [q] to exit. "
+                  read var_name
+                  if [[ $var_name == "q" ]]; then
+                        exit 0
+                  fi;
+              else
+               wmctrl -a firefox; xdotool key Ctrl+w; wmctrl -r firefox -b add,shaded
          else
              echo $i
         fi;
