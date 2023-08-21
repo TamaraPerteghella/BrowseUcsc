@@ -35,11 +35,11 @@ browser find. Safari expected. Exit"; #exit 0
        exit 0
      elif [[ "$var_name" == "" ]]; then
        index=`expr $index + 2`
-     elif [[ $var_name -gt $size ]]; then
+     elif [[ $(( $var_name*2 )) -gt $size ]]; then
        echo -e "Input not handled. Check that it respects the following criteria;
           \> Insert a suitable position; boundaries [1, $size]. Check with [grep -n] the index of the coordinates you are interested in."
      else
-       index=$var_name
+       index=$(( $var_name*2 ))
      fi;
    done
    ;;
@@ -88,11 +88,11 @@ browser find. Safari expected. Exit"; #exit 0
              exit 0
          elif [[ "$var_name" == "" ]]; then
              index=`expr $index + 2`
-         elif [[ $var_name -gt $size ]]; then
+         elif [[ $(( $var_name*2 )) -gt $size ]]; then
              echo -e "Input not handled. Check that it respects the following criteria;
                    \> Insert a suitable position; boundaries [1, $size]. Check with [grep -n] the index of the coordinates you are interested in."
          else
-             index=$var_name
+             index=$(( $var_name*2 ))
          fi;
      done
      ;;
